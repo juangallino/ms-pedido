@@ -191,13 +191,16 @@ public class PedidoRest {
                 .findFirst();
 
         if(indexOpt.isPresent()){
+
                     Pedido pedidoActualizado = listaPedidos.get(indexOpt.getAsInt());
-                    pedidoActualizado.getDetalle().remove(de)
-                    listaPedidos.set(indexOpt.getAsInt(),pedidoActualizado);//actualizamos el pedido en la lista, sino supongo que abria q hacer un put (?
-                    return ResponseEntity.accepted().body("Item agregado correctamente");
-                    ////////////////////////////////////////
-                    listaPedidos.get(indexOpt);
-            return ResponseEntity.ok().build();
+                    OptionalInt dpIndex =   IntStream.range(0, pedidoActualizado.getDetalle().size())
+                        .filter(i -> pedidoActualizado.getDetalle().get(i).getId().equals(idDetalle))
+                        .findFirst();
+
+                    pedidoActualizado.getDetalle().remove(dpIndex.getAsInt());
+                    listaPedidos.set(indexOpt.getAsInt(),pedidoActualizado);//actualizamos el pedido en la lista, sino supongo que habria q hacer un put (?
+                    return ResponseEntity.ok().body("Item eliminado correctamente");
+
         } else {
             return ResponseEntity.notFound().build();
         }
