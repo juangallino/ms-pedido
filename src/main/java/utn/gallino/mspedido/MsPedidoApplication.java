@@ -8,6 +8,7 @@ public class MsPedidoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MsPedidoApplication.class, args);
+		System.out.println("Hola spring soy el juano");
 	}
 
 }

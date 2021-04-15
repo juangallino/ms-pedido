@@ -3,7 +3,6 @@ package utn.gallino.mspedido.domain;
 import java.time.Instant;
 import java.util.List;
 
-import utn.gallino.mspedido.domain.*;
 public class Pedido {
 
 	private Integer id;
