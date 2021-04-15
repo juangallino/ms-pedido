@@ -1,5 +1,6 @@
 package utn.gallino.mspedido.domain;
 
+
 public class Producto {
 
 	private Integer id;

@@ -3,11 +3,12 @@ package utn.gallino.mspedido.domain;
 import java.time.Instant;
 import java.util.List;
 
+import utn.gallino.mspedido.domain.*;
 public class Pedido {
 
 	private Integer id;
 	private Instant fechaPedido;
-	private utn.gallino.mspedido.domain.Obra obra;
+	private Obra obra;
 	private List<DetallePedido> detalle;
 	private EstadoPedido estado;
 	public Integer getId() {
@@ -24,7 +25,7 @@ public class Pedido {
 	public void setFechaPedido(Instant fechaPedido) {
 		this.fechaPedido = fechaPedido;
 	}
-	public utn.gallino.mspedido.domain.Obra getObra() {
+	public Obra getObra() {
 		return obra;
 	}
 	public void setObra(Obra obra) {
