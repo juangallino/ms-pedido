@@ -4,9 +4,12 @@ package utn.gallino.mspedido.Rest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import utn.gallino.mspedido.Service.PedidoService;
 import utn.gallino.mspedido.domain.DetallePedido;
 import utn.gallino.mspedido.domain.Pedido;
 
@@ -21,7 +24,9 @@ import java.util.stream.IntStream;
 @RequestMapping("/api/pedido")
 public class PedidoRest {
 
-    //aca iria autowired la interface implementada por el service correspondiente al rest controller
+
+    @Autowired
+    PedidoService pedidoService;
 
     private static final List<Pedido> listaPedidos = new ArrayList<>();
     private static Integer ID_GEN_PEDIDO = 1;
@@ -31,22 +36,21 @@ public class PedidoRest {
     //METODOS POST
     @PostMapping
     @ApiOperation(value = "Crea un pedido")
-    public ResponseEntity<Pedido> crearPedido(@RequestBody Pedido unPedido) {
+    public ResponseEntity<String> crearPedido(@RequestBody Pedido unPedido) {
 
         System.out.println(" crear Pedido " + unPedido);
         unPedido.setId(ID_GEN_PEDIDO++);
         listaPedidos.add(unPedido);
-        return ResponseEntity.ok(unPedido);
-        /*
+
         if(unPedido.getObra()==null) {
             return ResponseEntity.badRequest().body("Debe elegir una obra");
         }
         if(unPedido.getDetalle()==null || unPedido.getDetalle().isEmpty() ) {
             return ResponseEntity.badRequest().body("Debe agregar items al pedido");
         }
-        //pedidoSrv.crearPedido(unPedido);
+        pedidoService.crearPedido(unPedido);
         return ResponseEntity.status(HttpStatus.CREATED).body("OK");
-*/
+
     }
 
 
