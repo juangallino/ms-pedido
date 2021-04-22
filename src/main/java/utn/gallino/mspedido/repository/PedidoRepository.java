@@ -6,11 +6,11 @@ import utn.gallino.mspedido.domain.Pedido;
 public class PedidoRepository extends InMemoryRepository<Pedido> {
     @Override
     public Integer getId(Pedido pedido) {
-        return null;
+       return pedido.getId();
     }
 
     @Override
     public void setId(Pedido pedido, Integer integer) {
-
+        pedido.setId(integer);
     }
 }
