@@ -4,49 +4,46 @@ package utn.gallino.mspedido.Rest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import utn.gallino.mspedido.Service.PedidoService;
 import utn.gallino.mspedido.domain.DetallePedido;
 import utn.gallino.mspedido.domain.Pedido;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.IntStream;
+import javax.swing.table.TableRowSorter;
 
 @RestController
 @RequestMapping("/api/pedido")
 public class PedidoRest {
 
-    //aca iria autowired la interface implementada por el service correspondiente al rest controller
 
-    private static final List<Pedido> listaPedidos = new ArrayList<>();
-    private static Integer ID_GEN_PEDIDO = 1;
-    private static Integer ID_GEN_DETALLE = 1;
+    @Autowired
+    PedidoService pedidoService;
 
 
-    //METODOS POST
+
+
+
+ //   -----------------------------------------------------------------------------------------------------------------//METODOS POST
     @PostMapping
     @ApiOperation(value = "Crea un pedido")
-    public ResponseEntity<Pedido> crearPedido(@RequestBody Pedido unPedido) {
+    public ResponseEntity<String> crearPedido(@RequestBody Pedido unPedido) {
 
         System.out.println(" crear Pedido " + unPedido);
-        unPedido.setId(ID_GEN_PEDIDO++);
-        listaPedidos.add(unPedido);
-        return ResponseEntity.ok(unPedido);
-        /*
+
+
         if(unPedido.getObra()==null) {
             return ResponseEntity.badRequest().body("Debe elegir una obra");
         }
         if(unPedido.getDetalle()==null || unPedido.getDetalle().isEmpty() ) {
             return ResponseEntity.badRequest().body("Debe agregar items al pedido");
         }
-        //pedidoSrv.crearPedido(unPedido);
+        pedidoService.crearPedido(unPedido);
         return ResponseEntity.status(HttpStatus.CREATED).body("OK");
-*/
+
     }
 
 
@@ -55,48 +52,29 @@ public class PedidoRest {
     public ResponseEntity<String> agregarItem(@RequestBody DetallePedido detalle, @PathVariable Integer idPedido) {
 
 
-
         System.out.println("Agregar detalle: " + detalle);
-        detalle.setId(ID_GEN_DETALLE++);
 
-      /*  Optional<Pedido> pd = listaPedidos.stream()
-                .filter(unPed->unPed.getId().equals(idPedido))
-                .findFirst();
-        pd.get().getDetalle().add(detalle);*/
+        try {
+            pedidoService.agregarDetalle(detalle, idPedido);
+        }catch (Exception e){ResponseEntity.notFound().build();}
 
-        //obtenemos el indice en qu se encuentra el pedido en la lista(dps lo vamos a envesitar, por eso no usa la opcin de abajo)
-
-        OptionalInt indexOpt = IntStream.range(0, listaPedidos.size())
-                .filter(i -> listaPedidos.get(i).getId().equals(idPedido))
-                .findFirst();
-
-
-            if (indexOpt.isPresent()) {
-                Pedido pedidoActualizado = listaPedidos.get(indexOpt.getAsInt());
-                pedidoActualizado.getDetalle().add(detalle);
-                listaPedidos.set(indexOpt.getAsInt(), pedidoActualizado);//actualizamos el pedido en la lista, sino supongo que abria q hacer un put (?
-                return ResponseEntity.accepted().body("Item agregado correctamente");
-            } else {//Fail
-                  return ResponseEntity.notFound().build();
-        }
-
+        return ResponseEntity.status(HttpStatus.CREATED).body("OK");
 
     }
 
 
 
-
-    //METODOS GET
+    //-----------------------------------------------------------------------------------------------------------------   //METODOS GET
 
     @GetMapping(path = "/{id}")
     @ApiOperation(value = "Busca un Pedido por id")
     public ResponseEntity<Pedido> pedidoPorId(@PathVariable Integer id) {
 
-        Optional<Pedido> c = listaPedidos
-                .stream()
-                .filter(pedido -> pedido.getId().equals(id))
-                .findFirst();
-        return ResponseEntity.of(c);
+
+        try {
+            return ResponseEntity.ok(pedidoService.buscarPedidoPorId(id));
+        }catch (Exception e){return ResponseEntity.notFound().build();}
+
     }
 
 
@@ -104,11 +82,14 @@ public class PedidoRest {
     @ApiOperation(value = "Busca un Pedido por id obra")
     public ResponseEntity<Pedido> pedidoPorIdObra(@PathVariable Integer idObra) {
 
-        Optional<Pedido> c = listaPedidos
-                .stream()
-                .filter(pedido -> pedido.getObra().getId().equals(idObra))
-                .findFirst();
-        return ResponseEntity.of(c);
+
+        try {
+            return ResponseEntity.ok(pedidoService.buscarPedidoPorIdObra(idObra));
+        }catch (Exception e){
+            return  ResponseEntity.notFound().build();}
+
+
+
     }
 
 //todo buscar por id o cuit en una misma llamada, x por separado con diferente path es facil
@@ -127,7 +108,7 @@ public class PedidoRest {
     @ApiOperation(value = "Busca un Detalle por id")
     public ResponseEntity<DetallePedido> buscarDetalleXId(@PathVariable Integer idPedido, @PathVariable Integer idDetalle) {
 
-        Optional<Pedido> c = listaPedidos
+      /*  Optional<Pedido> c = listaPedidos
                 .stream()
                 .filter(unPed -> unPed.getId().equals(idPedido))
                 .findFirst();
@@ -143,11 +124,19 @@ public class PedidoRest {
             }
         } else {
             return ResponseEntity.badRequest().build();
-        }
+        }*/
+
+        try {
+            return ResponseEntity.ok(pedidoService.buscarDetallePorId(idDetalle,idPedido));
+
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();}
+
+
     }
 
 
-    //METODOS PUT
+    //----------------------------------------------------------------------------------------------------------------- //METODOS PUT
 
     @PutMapping(path = "/{id}")
     @ApiOperation(value = "Actualiza un Pedido")
@@ -157,36 +146,33 @@ public class PedidoRest {
             @ApiResponse(code = 403, message = "Prohibido"),
             @ApiResponse(code = 404, message = "El ID no existe")})
     public ResponseEntity<Pedido> actualizar(@RequestBody Pedido pedido, @PathVariable Integer id) {
-        OptionalInt indexOpt = IntStream.range(0, listaPedidos.size())
-                .filter(i -> listaPedidos.get(i).getId().equals(id))
-                .findFirst();
 
-        if (indexOpt.isPresent()) {
-            listaPedidos.set(indexOpt.getAsInt(), pedido);
-            return ResponseEntity.ok(pedido);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+        try {
+            return ResponseEntity.ok(pedidoService.actualizarPedido(pedido, id));
+        }catch (Exception e){
+        return ResponseEntity.notFound().build();}
+
+}
 
 
-    //METODOS DELETE
+
+    //-----------------------------------------------------------------------------------------------------------------//METODOS DELETE
 
 
     @DeleteMapping(path = "/{id}")
     @ApiOperation(value = "Elimina un Pedido x id")
-    public ResponseEntity<String> borrar(@PathVariable Integer id) {
+    public ResponseEntity<String> borrar(@PathVariable Integer id)  {
 
-        OptionalInt indexOpt = IntStream.range(0, listaPedidos.size())            //Busco el index en la list
-                .filter(i -> listaPedidos.get(i).getId().equals(id))
-                .findFirst();
 
-        if (indexOpt.isPresent()) {                                                   //si estaba lo elimino
-            listaPedidos.remove(indexOpt.getAsInt());
-            return ResponseEntity.ok().build();
-        } else {
+        try {
+            pedidoService.bajaPedido(id);
+            String respuesta = "ok "+id;
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(respuesta );
+
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+
     }
 
 
@@ -194,7 +180,7 @@ public class PedidoRest {
     @ApiOperation(value = "Eliminar un detalle de un pedido")
     public ResponseEntity<String> borrarDetalle(@PathVariable Integer idPedido, @PathVariable Integer idDetalle) {
 
-        OptionalInt indexOpt = IntStream.range(0, listaPedidos.size())
+        /*OptionalInt indexOpt = IntStream.range(0, listaPedidos.size())
                 .filter(i -> listaPedidos.get(i).getId().equals(idPedido))
                 .findFirst();
 
@@ -214,7 +200,14 @@ public class PedidoRest {
             }
         } else {
             return ResponseEntity.notFound().build();
-        }
+        }*/
+
+        try {
+            pedidoService.eliminarDetalle(idDetalle, idPedido);
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("OK");
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();}
 
     }
 }
