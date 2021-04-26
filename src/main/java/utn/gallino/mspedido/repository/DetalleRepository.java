@@ -1,16 +1,16 @@
 package utn.gallino.mspedido.repository;
 
-import frsf.isi.dan.InMemoryRepository;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 import utn.gallino.mspedido.domain.DetallePedido;
 
-public class DetalleRepository extends InMemoryRepository<DetallePedido> {
-    @Override
-    public Integer getId(DetallePedido detallePedido) {
-        return detallePedido.getId();
-    }
+import java.util.List;
+import java.util.Optional;
 
-    @Override
-    public void setId(DetallePedido detallePedido, Integer integer) {
-        detallePedido.setId(integer);
-    }
+public interface DetalleRepository extends JpaRepository<DetallePedido, Integer> {
+
 }

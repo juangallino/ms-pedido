@@ -1,15 +1,36 @@
 package utn.gallino.mspedido.domain;
 
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
 
+
+
+@Entity
 public class Pedido {
 
+	@Id
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
+	@Column
 	private Instant fechaPedido;
+
+	@OneToOne
+	@JoinColumn(name = "obra_ID")
+
 	private Obra obra;
+
+	@OneToMany()
+	@JoinColumn(name = "detalle_pedido_ID")
+
 	private List<DetallePedido> detalle;
+
+	@OneToOne
+	@JoinColumn(name = "estado_pedido_ID")
 	private EstadoPedido estado;
+
+
+
 	public Integer getId() {
 		return id;
 	}

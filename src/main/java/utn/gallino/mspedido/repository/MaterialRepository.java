@@ -1,16 +1,17 @@
 package utn.gallino.mspedido.repository;
 
-import frsf.isi.dan.InMemoryRepository;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
+import utn.gallino.mspedido.domain.DetallePedido;
 import utn.gallino.mspedido.domain.Producto;
 
-public class MaterialRepository extends InMemoryRepository<Producto> {
-    @Override
-    public Integer getId(Producto producto) {
-        return null;
-    }
+import java.util.List;
+import java.util.Optional;
 
-    @Override
-    public void setId(Producto producto, Integer integer) {
+public interface MaterialRepository extends JpaRepository<Producto, Integer> {
 
-    }
 }

@@ -1,8 +1,14 @@
 package utn.gallino.mspedido.domain;
 
+import javax.persistence.*;
+
+@Entity
 public class Obra {
-	
-	private Integer id;
+
+	@Id
+	@GeneratedValue(strategy= GenerationType.IDENTITY)private Integer id;
+
+	@Column
 	private String descripcion;
 
 

@@ -1,10 +1,18 @@
 package utn.gallino.mspedido.domain;
 
+import javax.persistence.*;
 
+@Entity
 public class Producto {
 
+	@Id
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
+
+	@Column
 	private String descripcion;
+
+	@Column
 	private Double precio;
 	
 	public Integer getId() {

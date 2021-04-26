@@ -1,10 +1,28 @@
 package utn.gallino.mspedido.domain;
 
+
+import javax.persistence.Entity;
+import javax.persistence.*;
+import javax.persistence.Table;
+
+@Entity
+@Table
 public class DetallePedido {
+
+	@Id
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
+
+	@ManyToOne()
+	@JoinColumn(name = "producto_ID")
 	private Producto producto;
+
+	@Column
 	private Integer cantidad;
+
+	@Column
 	private Double precio;
+
 
 
 	public DetallePedido(){
@@ -42,6 +60,6 @@ public class DetallePedido {
 	public void setPrecio(Double precio) {
 		this.precio = precio;
 	}
-	
-	
+
+
 }
