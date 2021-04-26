@@ -1,5 +1,6 @@
 package utn.gallino.mspedido.Service.impl;
 
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
 import utn.gallino.mspedido.domain.*;
 import  utn.gallino.mspedido.repository.PedidoRepository;
 import utn.gallino.mspedido.Service.ClienteService;
@@ -17,7 +18,6 @@ public class PedidoServiceImpl implements PedidoService {
 
 	@Autowired
 	MaterialService materialSrv;
-
 
 	@Autowired
 	ClienteService clienteService;

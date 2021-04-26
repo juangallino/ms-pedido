@@ -12,17 +12,15 @@ public class Pedido {
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
-	@Column
+	@Column(columnDefinition = "TIMESTAMP")
 	private Instant fechaPedido;
 
 	@OneToOne
 	@JoinColumn(name = "obra_ID")
-
 	private Obra obra;
 
 	@OneToMany()
 	@JoinColumn(name = "detalle_pedido_ID")
-
 	private List<DetallePedido> detalle;
 
 	@OneToOne
