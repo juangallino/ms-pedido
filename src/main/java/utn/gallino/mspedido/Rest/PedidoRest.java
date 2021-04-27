@@ -41,7 +41,12 @@ public class PedidoRest {
         if(unPedido.getDetalle()==null || unPedido.getDetalle().isEmpty() ) {
             return ResponseEntity.badRequest().body("Debe agregar items al pedido");
         }
-        pedidoService.crearPedido(unPedido);
+        try {
+            pedidoService.crearPedido(unPedido);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body("OK");
 
     }
