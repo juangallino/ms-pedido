@@ -3,7 +3,7 @@ package utn.gallino.mspedido.domain;
 import javax.persistence.*;
 
 @Entity
-@Table
+@Table(name = "PED_ESTADO_PEDIDO", schema = "MS-PED")
 public class EstadoPedido {
 
 	@Id

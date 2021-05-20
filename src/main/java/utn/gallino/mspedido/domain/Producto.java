@@ -3,10 +3,10 @@ package utn.gallino.mspedido.domain;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "STK_MATERIAL", schema = "MS-STK")
 public class Producto {
 
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
 
 	@Column

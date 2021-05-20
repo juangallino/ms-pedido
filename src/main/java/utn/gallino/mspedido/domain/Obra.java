@@ -3,11 +3,11 @@ package utn.gallino.mspedido.domain;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "USR_OBRA", schema = "MS-USR")
 public class Obra {
 
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)private Integer id;
-
+	private Integer id;
 	@Column
 	private String descripcion;
 

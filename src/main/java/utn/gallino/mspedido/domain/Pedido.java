@@ -7,6 +7,7 @@ import java.util.List;
 
 
 @Entity
+@Table(name = "PED_PEDIDO", schema = "MS-PED")
 public class Pedido {
 
 	@Id
