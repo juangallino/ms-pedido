@@ -44,7 +44,7 @@ public class PedidoRest {
         try {
             pedidoService.crearPedido(unPedido);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("algo salio mal");
 
         }
         return ResponseEntity.status(HttpStatus.CREATED).body("OK");
