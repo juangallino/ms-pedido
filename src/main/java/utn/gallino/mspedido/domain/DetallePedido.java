@@ -14,13 +14,13 @@ public class DetallePedido {
 	private Integer id;
 
 	@ManyToOne()
-	@JoinColumn(name = "producto_ID")
+	@JoinColumn(name = "ID_MATERIAL")
 	private Producto producto;
 
 	@Column
 	private Integer cantidad;
 
-	@Column
+	@Column(name = "PRECIO_DP")
 	private Double precio;
 
 

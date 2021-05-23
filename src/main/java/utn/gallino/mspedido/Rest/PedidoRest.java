@@ -113,23 +113,7 @@ public class PedidoRest {
     @ApiOperation(value = "Busca un Detalle por id")
     public ResponseEntity<DetallePedido> buscarDetalleXId(@PathVariable Integer idPedido, @PathVariable Integer idDetalle) {
 
-      /*  Optional<Pedido> c = listaPedidos
-                .stream()
-                .filter(unPed -> unPed.getId().equals(idPedido))
-                .findFirst();
-        if (c.isPresent()) {
-            Optional<DetallePedido> detalle = c.get().getDetalle()
-                    .stream()
-                    .filter(unDetPed -> unDetPed.getId().equals(idDetalle))
-                    .findFirst();
-            if (detalle.isPresent()) {
-                return ResponseEntity.of(detalle);
-            } else {
-                return ResponseEntity.badRequest().build();
-            }
-        } else {
-            return ResponseEntity.badRequest().build();
-        }*/
+
 
         try {
             return ResponseEntity.ok(pedidoService.buscarDetallePorId(idDetalle,idPedido));
@@ -185,27 +169,6 @@ public class PedidoRest {
     @ApiOperation(value = "Eliminar un detalle de un pedido")
     public ResponseEntity<String> borrarDetalle(@PathVariable Integer idPedido, @PathVariable Integer idDetalle) {
 
-        /*OptionalInt indexOpt = IntStream.range(0, listaPedidos.size())
-                .filter(i -> listaPedidos.get(i).getId().equals(idPedido))
-                .findFirst();
-
-        if (indexOpt.isPresent()) {
-
-            Pedido pedidoActualizado = listaPedidos.get(indexOpt.getAsInt());
-            OptionalInt dpIndex = IntStream.range(0, pedidoActualizado.getDetalle().size())
-                    .filter(i -> pedidoActualizado.getDetalle().get(i).getId().equals(idDetalle))
-                    .findFirst();
-            if (dpIndex.isPresent()) {
-                pedidoActualizado.getDetalle().remove(dpIndex.getAsInt());
-                listaPedidos.set(indexOpt.getAsInt(), pedidoActualizado);//actualizamos el pedido en la lista, sino supongo que habria q hacer un put (?
-                return ResponseEntity.ok().body("Item eliminado correctamente");
-
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }*/
 
         try {
             pedidoService.eliminarDetalle(idDetalle, idPedido);

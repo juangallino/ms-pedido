@@ -44,8 +44,8 @@ public class Pedido {
 	public void setFechaPedido(Instant fechaPedido) {
 		this.fechaPedido = fechaPedido;
 	}
-	public Obra getObra() {
-		return obra;
+
+	public Obra getObra() {	return obra;
 	}
 	public void setObra(Obra obra) {
 		this.obra = obra;
