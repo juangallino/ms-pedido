@@ -14,6 +14,7 @@ import utn.gallino.mspedido.domain.DetallePedido;
 import utn.gallino.mspedido.domain.Pedido;
 
 import javax.swing.table.TableRowSorter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedido")
@@ -178,4 +179,39 @@ public class PedidoRest {
             return ResponseEntity.notFound().build();}
 
     }
+                                                                    //EXTRAS
+    //***************************************************************----------*************************************************************************************
+
+
+
+    @GetMapping(path = "/obra/clienteactivo/")
+    @ApiOperation(value = "Servicio de checko de clietne activo mediante lista de id obras")
+    public ResponseEntity<Boolean> checkClienteActivo(@RequestParam(value="listaId_Obras") List<Integer> listaId_Obras) {
+        System.out.println("Lista de obras : "+listaId_Obras.toString());
+
+        Boolean respuesta =listaId_Obras.stream().anyMatch(obra->pedidoService.checkPedidoPorIdObra(obra));
+        System.out.println(respuesta);
+        return ResponseEntity.ok(respuesta);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

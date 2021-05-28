@@ -20,11 +20,11 @@ public class Pedido {
 	@JoinColumn(name = "obra_ID")
 	private Obra obra;
 
-	@OneToMany()
+	@OneToMany(cascade = {CascadeType.MERGE})
 	@JoinColumn(name = "detalle_pedido_ID")
 	private List<DetallePedido> detalle;
 
-	@OneToOne
+	@OneToOne(cascade = {CascadeType.ALL})
 	@JoinColumn(name = "estado_pedido_ID")
 	private EstadoPedido estado;
 
@@ -61,6 +61,10 @@ public class Pedido {
 	}
 	public void setEstado(EstadoPedido estado) {
 		this.estado = estado;
+	}
+
+	public void addDetallePedido(DetallePedido dp){
+		this.detalle.add(dp);
 	}
 	
 	

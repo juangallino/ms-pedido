@@ -16,5 +16,5 @@ import java.util.Optional;
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
-
+public Pedido findPedidoByObra_Id(Integer Id);
 }

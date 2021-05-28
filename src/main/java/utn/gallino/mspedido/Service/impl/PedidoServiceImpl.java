@@ -1,17 +1,24 @@
 package utn.gallino.mspedido.Service.impl;
 
 import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 import utn.gallino.mspedido.domain.*;
+import utn.gallino.mspedido.repository.DetalleRepository;
+import utn.gallino.mspedido.repository.EstadoPedidoRepository;
 import  utn.gallino.mspedido.repository.PedidoRepository;
 import utn.gallino.mspedido.Service.ClienteService;
 import utn.gallino.mspedido.Service.MaterialService;
 import utn.gallino.mspedido.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import utn.gallino.mspedido.repository.PedidoRepository;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
@@ -21,38 +28,76 @@ public class PedidoServiceImpl implements PedidoService {
 
 	@Autowired
 	ClienteService clienteService;
+	@Autowired
+	DetalleRepository detalleRepository;
 
 	@Autowired
 	PedidoRepository pedidoRepository;
+	@Autowired
+	EstadoPedidoRepository estadoPedidoRepository;
+
+	private static final String STOCK_REST_API_URL = "http://localhost:9001";
+	private static final String Stock_ENDPOINT = "/api/stock";
+	RestTemplate rest = new RestTemplate();
 
 	@Override
 	public Pedido crearPedido(Pedido p) {
+
+		p.setFechaPedido(Instant.now().plusSeconds(1));
 		System.out.println("HOLA PEDIDO " + p);
+		System.out.println(1);
 		boolean hayStock = p.getDetalle()
 				.stream()
 				.allMatch(dp -> verificarStock(dp.getProducto(), dp.getCantidad()));
-
+		System.out.println(2);
 		Double totalOrden = p.getDetalle()
 				.stream()
 				.mapToDouble(dp -> dp.getCantidad() * dp.getPrecio())
 				.sum();
-
+		System.out.println("total orden= " +totalOrden);
+		System.out.println(3);
 
 		Double saldoCliente = clienteService.deudaCliente(p.getObra());                //sale consulta http hasta rest de cliente para averiguar su maxcuenta corriente
 		Double nuevoSaldo = saldoCliente - totalOrden;
 
+
 		Boolean generaDeuda = nuevoSaldo < 0;
 		if (hayStock) {
 			if (!generaDeuda || (generaDeuda && saldoDeudor(p.getObra(), nuevoSaldo) && this.esDeBajoRiesgo(p.getObra()))) {
-				p.setEstado(new EstadoPedido(1, "ACEPTADO"));
+				System.out.println("puede ser generado el pedido. adentro del if");
+				p.setEstado(estadoPedidoRepository.getEstadoPedidoByEstado("ACEPTADO"));
+				System.out.println(p.getEstado().toString()+" ESTADO ACEPTADO");
+
+				try{
+					guardarPedido(p);
+					actualizarStock(p);//llamada http a ms-stock
+
+				}catch (Exception e){e.printStackTrace();}
+
+
+
 			} else {
+				System.out.println("en actualizarstockdp");
 				throw new RuntimeException("No tiene aprobacion crediticia");
 			}
 		} else {
-			p.setEstado(new EstadoPedido(2, "PENDIENTE"));
+			p.setEstado(estadoPedidoRepository.getEstadoPedidoByEstado("PENDIENTE"));
+			System.out.println(p.getEstado().toString()+" ESTADO PENDIENTE");
+			guardarPedido(p);
+			//metodo crear solicitudProvision(p);
+
 		}
-		guardarPedido(p);
 		return p;
+	}
+
+	private Boolean actualizarStock(Pedido p) {
+		String id_DetallesPedidos = p.getDetalle().stream()
+				.map(dp->dp.getId().toString())
+				.collect(Collectors.joining(","));
+		System.out.println("en actualizarstockdp");
+		return true;
+		//String url = STOCK_REST_API_URL + Stock_ENDPOINT +"/pedido/actualizarStockPorPedido/?listaId_dp="+ id_DetallesPedidos;
+		//return rest.exchange(url, HttpMethod.GET,null, Boolean.class).getBody();
 	}
 
 
@@ -64,6 +109,9 @@ public class PedidoServiceImpl implements PedidoService {
 
 	@Override
 	public Pedido guardarPedido(Pedido p) {
+		for (DetallePedido dp : p.getDetalle()){
+			detalleRepository.save(dp);
+		}
 		pedidoRepository.save(p);
 		return p;
 	}
@@ -112,9 +160,11 @@ public class PedidoServiceImpl implements PedidoService {
 
 	@Override
 	public Pedido buscarPedidoPorIdObra(Integer idObra) throws Exception {
-		List<Pedido> result = new ArrayList<>();
-		Pedido auxP;
+				Pedido auxP;
+				List<Pedido> result =new ArrayList<>();
 		try {
+
+		//	auxP=pedidoRepository.findPedidoByObra_Id(idObra);
 			pedidoRepository.findAll().forEach(pedido -> result.add(pedido));                //CONVERT ITERABLE TO lIST
 			auxP = result.stream()
 					.filter(p -> p.getObra().getId().equals(idObra))
@@ -124,8 +174,27 @@ public class PedidoServiceImpl implements PedidoService {
 
 		return  auxP;
 	}
+	@Override			//Este metodo se fija si existe algun pedido asociado a la cuenta y devuelve true si hay de lo contrario false
+	public Boolean checkPedidoPorIdObra(Integer idObra){
+		System.out.println("check cliente activo iniciado con id obra= " + idObra);
+		Pedido auxP;
+		try {
+			//auxP= pedidoRepository.findPedidoByObra_Id(idObra);    //todo NO ANDA EL METODO FINDBY AUTOMATICO DEL REPO
+			auxP= buscarPedidoPorIdObra(idObra);
+		}
+			catch (Exception e ){    System.out.println("falso por el catch"); return false;}
+		if(auxP==null){ System.out.println("falso por null");  return false;}
 
-	@Override
+		System.out.println("true el pedido de la obra");
+		return true;
+
+	}
+
+
+
+
+
+		@Override
 	public DetallePedido buscarDetallePorId(Integer idDetalle, Integer idPedido) throws Exception {
 
 			DetallePedido auxDp;
@@ -141,6 +210,8 @@ public class PedidoServiceImpl implements PedidoService {
 		}
 
 	boolean verificarStock(Producto p, Integer cantidad) {
+		System.out.println("metodo verificar stock con cantidad"+ cantidad);
+		System.out.println(materialSrv.stockDisponible(p) >= cantidad);
 		return materialSrv.stockDisponible(p) >= cantidad;
 	}
 
@@ -152,7 +223,7 @@ public class PedidoServiceImpl implements PedidoService {
 	}
 
 	boolean saldoDeudor(Obra o, Double saldoNuevo) {
-		Double maximoSaldoNegativo = clienteService.maximoSaldoNegativo(o);
+		Double maximoSaldoNegativo = (Double) clienteService.maximoSaldoNegativo(o);
 		Boolean tieneSaldo = Math.abs(saldoNuevo) < maximoSaldoNegativo;
 		return tieneSaldo;
 
