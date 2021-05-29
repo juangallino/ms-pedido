@@ -24,10 +24,12 @@ public class MaterialServiceImpl implements MaterialService {
 		System.out.println("en checkeo de stock disponible");
 		Integer id= m.getId();
 		//Integer id= materialRepository.getOne(m.getId()).getId();
-		String url = REST_API_URL + STOCK_ENDPOINT + id;
-		//ResponseEntity<Integer> respuesta = rest.exchange(url, HttpMethod.GET,null, Integer.class);
+		String url = REST_API_URL + STOCK_ENDPOINT +"/stock_disponible/"+ id;
+		ResponseEntity<Integer> respuesta = rest.exchange(url, HttpMethod.GET,null, Integer.class);
 
-		return 1500;//respuesta.getBody();
+		//return 1500;
+		System.out.println(m.toString() + " stock: "+respuesta.getBody());
+		return respuesta.getBody();
 	}
 
 }

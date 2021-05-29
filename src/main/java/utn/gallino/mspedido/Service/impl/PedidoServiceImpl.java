@@ -95,9 +95,13 @@ public class PedidoServiceImpl implements PedidoService {
 				.map(dp->dp.getId().toString())
 				.collect(Collectors.joining(","));
 		System.out.println("en actualizarstockdp");
-		return true;
-		//String url = STOCK_REST_API_URL + Stock_ENDPOINT +"/pedido/actualizarStockPorPedido/?listaId_dp="+ id_DetallesPedidos;
-		//return rest.exchange(url, HttpMethod.GET,null, Boolean.class).getBody();
+		//return true;
+		System.out.println("llamada http a stock api rest");
+		String url = STOCK_REST_API_URL + Stock_ENDPOINT +"/pedido/actualizarStockPorPedido/?listaId_dp="+ id_DetallesPedidos;
+		try {
+			rest.exchange(url, HttpMethod.POST,null, Boolean.class).getBody();
+		}catch (Exception e){return  false;}
+		return  true;
 	}
 
 
