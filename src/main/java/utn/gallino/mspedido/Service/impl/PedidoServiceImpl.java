@@ -50,23 +50,33 @@ public class PedidoServiceImpl implements PedidoService {
 				.stream()
 				.allMatch(dp -> verificarStock(dp.getProducto(), dp.getCantidad()));
 		System.out.println(2);
-		Double totalOrden = p.getDetalle()
+
+		Double totalOrdenPedido=0.0;
+		for (DetallePedido dp : p.getDetalle()){
+			Double costoDp=dp.getCantidad() * dp.getProducto().getPrecio();
+			totalOrdenPedido+= costoDp;
+			System.out.println("costo del dpPed: " +costoDp +" suma total del pedido: "+totalOrdenPedido);
+			dp.setPrecio(costoDp);
+
+		}
+		/*Double totalOrden = p.getDetalle()
 				.stream()
-				.mapToDouble(dp -> dp.getCantidad() * dp.getPrecio())
+				.mapToDouble(dp -> dp.getCantidad() * dp.getProducto().getPrecio())
 				.sum();
-		System.out.println("total orden= " +totalOrden);
+		*/
+		System.out.println("total orden= " +totalOrdenPedido);
 		System.out.println(3);
 
 		Double saldoCliente = clienteService.deudaCliente(p.getObra());                //sale consulta http hasta rest de cliente para averiguar su maxcuenta corriente
-		Double nuevoSaldo = saldoCliente - totalOrden;
+		Double nuevoSaldo = saldoCliente - totalOrdenPedido;
 
 
 		Boolean generaDeuda = nuevoSaldo < 0;
 		if (hayStock) {
 			if (!generaDeuda || (generaDeuda && saldoDeudor(p.getObra(), nuevoSaldo) && this.esDeBajoRiesgo(p.getObra()))) {
 				System.out.println("puede ser generado el pedido. adentro del if");
-				p.setEstado(estadoPedidoRepository.getEstadoPedidoByEstado("ACEPTADO"));
-				System.out.println(p.getEstado().toString()+" ESTADO ACEPTADO");
+				p.setEstado(estadoPedidoRepository.getEstadoPedidoByEstado("NUEVO"));
+				System.out.println(p.getEstado().toString()+" ESTADO NUEVO");
 
 				try{
 					guardarPedido(p);
@@ -77,7 +87,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 
 			} else {
-				System.out.println("en actualizarstockdp");
+				System.out.println("No tiene aprobacion crediticia");
 				throw new RuntimeException("No tiene aprobacion crediticia");
 			}
 		} else {

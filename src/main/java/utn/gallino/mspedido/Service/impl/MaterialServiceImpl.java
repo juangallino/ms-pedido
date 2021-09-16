@@ -27,7 +27,7 @@ public class MaterialServiceImpl implements MaterialService {
 		String url = REST_API_URL + STOCK_ENDPOINT +"/stock_disponible/"+ id;
 		ResponseEntity<Integer> respuesta = rest.exchange(url, HttpMethod.GET,null, Integer.class);
 
-		//return 1500;
+
 		System.out.println(m.toString() + " stock: "+respuesta.getBody());
 		return respuesta.getBody();
 	}
