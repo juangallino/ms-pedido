@@ -2,6 +2,7 @@ package utn.gallino.mspedido.Service.impl;
 
 import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
 import org.springframework.http.HttpMethod;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestTemplate;
 import utn.gallino.mspedido.domain.*;
 import utn.gallino.mspedido.repository.DetalleRepository;
@@ -12,10 +13,14 @@ import utn.gallino.mspedido.Service.MaterialService;
 import utn.gallino.mspedido.Service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import utn.gallino.mspedido.repository.PedidoRepository;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +41,9 @@ public class PedidoServiceImpl implements PedidoService {
 	@Autowired
 	EstadoPedidoRepository estadoPedidoRepository;
 
+	@Autowired
+	JmsTemplate jms;
+
 	private static final String STOCK_REST_API_URL = "http://localhost:9001";
 	private static final String Stock_ENDPOINT = "/api/stock";
 	RestTemplate rest = new RestTemplate();
@@ -48,7 +56,7 @@ public class PedidoServiceImpl implements PedidoService {
 		System.out.println(1);
 		boolean hayStock = p.getDetalle()
 				.stream()
-				.allMatch(dp -> verificarStock(dp.getProducto(), dp.getCantidad()));
+				.allMatch(dp -> verificarStock(dp.getProducto(), dp.getCantidad()));   //sale consulta http hasta rest de stock para averiguar stock de producto
 		System.out.println(2);
 
 		Double totalOrdenPedido=0.0;
@@ -73,6 +81,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 		Boolean generaDeuda = nuevoSaldo < 0;
 		if (hayStock) {
+			System.out.println("hay stock");
 			if (!generaDeuda || (generaDeuda && saldoDeudor(p.getObra(), nuevoSaldo) && this.esDeBajoRiesgo(p.getObra()))) {
 				System.out.println("puede ser generado el pedido. adentro del if");
 				p.setEstado(estadoPedidoRepository.getEstadoPedidoByEstado("NUEVO"));
@@ -80,7 +89,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 				try{
 					guardarPedido(p);
-					actualizarStock(p);//llamada http a ms-stock
+					actualizarStock(p.getId());  //JMS //llamada http a ms-stock
 
 				}catch (Exception e){e.printStackTrace();}
 
@@ -100,17 +109,25 @@ public class PedidoServiceImpl implements PedidoService {
 		return p;
 	}
 
-	private Boolean actualizarStock(Pedido p) {
-		String id_DetallesPedidos = p.getDetalle().stream()
+	private Boolean actualizarStock(Integer id_Pedido) {
+
+		Pedido ped = pedidoRepository.findById(id_Pedido).get();
+		String id_DetallesPedidos = ped.getDetalle().stream()
 				.map(dp->dp.getId().toString())
 				.collect(Collectors.joining(","));
+
 		System.out.println("en actualizarstockdp");
 		//return true;
-		System.out.println("llamada http a stock api rest");
-		String url = STOCK_REST_API_URL + Stock_ENDPOINT +"/pedido/actualizarStockPorPedido/?listaId_dp="+ id_DetallesPedidos;
-		try {
-			rest.exchange(url, HttpMethod.POST,null, Boolean.class).getBody();
-		}catch (Exception e){return  false;}
+
+		//JMS
+		jms.convertAndSend("COLA_PEDIDOS",id_DetallesPedidos);
+
+		//System.out.println("llamada http a stock api rest");
+		//String url = STOCK_REST_API_URL + Stock_ENDPOINT +"/pedido/actualizarStockPorPedido/?listaId_dp="+ id_DetallesPedidos;
+
+	//	try {
+	//		rest.exchange(url, HttpMethod.POST,null, Boolean.class).getBody();
+	//	}catch (Exception e){return  false;}
 		return  true;
 	}
 
@@ -224,7 +241,7 @@ public class PedidoServiceImpl implements PedidoService {
 		}
 
 	boolean verificarStock(Producto p, Integer cantidad) {
-		System.out.println("metodo verificar stock con cantidad"+ cantidad);
+		System.out.println("metodo verificar stock con cantidad "+ cantidad+" de producto "+p.getDescripcion());
 		System.out.println(materialSrv.stockDisponible(p) >= cantidad);
 		return materialSrv.stockDisponible(p) >= cantidad;
 	}
