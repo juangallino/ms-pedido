@@ -44,6 +44,8 @@ public class PedidoServiceImpl implements PedidoService {
 	@Autowired
 	JmsTemplate jms;
 
+	private static final Logger logger =LoggerFactory.getLogger(PedidoServiceImpl.class);
+
 	private static final String STOCK_REST_API_URL = "http://localhost:9001";
 	private static final String Stock_ENDPOINT = "/api/stock";
 	RestTemplate rest = new RestTemplate();
@@ -52,8 +54,8 @@ public class PedidoServiceImpl implements PedidoService {
 	public Pedido crearPedido(Pedido p) {
 
 		p.setFechaPedido(Instant.now().plusSeconds(1));
-		System.out.println("HOLA PEDIDO " + p);
-		System.out.println(1);
+
+		logger.trace("Creando pedido "+p);
 		boolean hayStock = p.getDetalle()
 				.stream()
 				.allMatch(dp -> verificarStock(dp.getProducto(), dp.getCantidad()));   //sale consulta http hasta rest de stock para averiguar stock de producto
@@ -63,7 +65,7 @@ public class PedidoServiceImpl implements PedidoService {
 		for (DetallePedido dp : p.getDetalle()){
 			Double costoDp=dp.getCantidad() * dp.getProducto().getPrecio();
 			totalOrdenPedido+= costoDp;
-			System.out.println("costo del dpPed: " +costoDp +" suma total del pedido: "+totalOrdenPedido);
+			logger.trace("costo del dpPed: " +costoDp +" suma total del pedido: "+totalOrdenPedido);
 			dp.setPrecio(costoDp);
 
 		}
@@ -102,6 +104,7 @@ public class PedidoServiceImpl implements PedidoService {
 		} else {
 			p.setEstado(estadoPedidoRepository.getEstadoPedidoByEstado("PENDIENTE"));
 			System.out.println(p.getEstado().toString()+" ESTADO PENDIENTE");
+			logger.trace("El pedido se guardo con estado: {}",p.getEstado().getEstado());
 			guardarPedido(p);
 			//metodo crear solicitudProvision(p);
 
@@ -121,7 +124,7 @@ public class PedidoServiceImpl implements PedidoService {
 
 		//JMS
 		jms.convertAndSend("COLA_PEDIDOS",id_DetallesPedidos);
-
+		logger.trace("Se envio el msj : {}", id_DetallesPedidos);
 		//System.out.println("llamada http a stock api rest");
 		//String url = STOCK_REST_API_URL + Stock_ENDPOINT +"/pedido/actualizarStockPorPedido/?listaId_dp="+ id_DetallesPedidos;
 

@@ -33,8 +33,7 @@ public class PedidoRest {
     @ApiOperation(value = "Crea un pedido")
     public ResponseEntity<String> crearPedido(@RequestBody Pedido unPedido) {
 
-        System.out.println(" crear Pedido " + unPedido);
-
+        Pedido p = new Pedido();
 
         if(unPedido.getObra()==null) {
             return ResponseEntity.badRequest().body("Debe elegir una obra");
@@ -43,12 +42,12 @@ public class PedidoRest {
             return ResponseEntity.badRequest().body("Debe agregar items al pedido");
         }
         try {
-            pedidoService.crearPedido(unPedido);
+          p =  pedidoService.crearPedido(unPedido);
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("algo salio mal");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body("OK");
+        return ResponseEntity.status(HttpStatus.CREATED).body(p.getEstado().getEstado());
 
     }
 
@@ -62,7 +61,7 @@ public class PedidoRest {
 
         try {
             pedidoService.agregarDetalle(detalle, idPedido);
-        }catch (Exception e){ResponseEntity.notFound().build();}
+        }catch (Exception e){ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());}
 
         return ResponseEntity.status(HttpStatus.CREATED).body("OK");
 
