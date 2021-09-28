@@ -1,19 +1,27 @@
 package utn.gallino.mspedido.domain;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "PED_ESTADO_PEDIDO", schema = "MS-PED")
 public class EstadoPedido {
 
+	@Id
+	//@GeneratedValue(strategy= GenerationType.IDENTITY)
+	private Integer id;
+
+	@Column
+	private String estado;
+
 	public EstadoPedido() {
-		
+
 	}
-	
+
 	public EstadoPedido(Integer id, String estado) {
 		super();
 		this.id = id;
 		this.estado = estado;
 	}
-	
-	private Integer id;
-	private String estado;
 	public Integer getId() {
 		return id;
 	}

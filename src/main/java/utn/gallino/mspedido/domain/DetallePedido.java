@@ -1,10 +1,28 @@
 package utn.gallino.mspedido.domain;
 
+
+import javax.persistence.Entity;
+import javax.persistence.*;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "PED_DETALLE_PEDIDO", schema = "MS-PED")
 public class DetallePedido {
+
+	@Id
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
+
+	@ManyToOne//(cascade = CascadeType.ALL)
+	@JoinColumn(name = "ID_MATERIAL")
 	private Producto producto;
+
+	@Column
 	private Integer cantidad;
+
+	@Column(name = "PRECIO_DP")
 	private Double precio;
+
 
 
 	public DetallePedido(){
@@ -42,6 +60,6 @@ public class DetallePedido {
 	public void setPrecio(Double precio) {
 		this.precio = precio;
 	}
-	
-	
+
+
 }

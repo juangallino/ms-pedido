@@ -1,10 +1,18 @@
 package utn.gallino.mspedido.domain;
 
+import javax.persistence.*;
 
+@Entity
+@Table(name = "STK_MATERIAL", schema = "MS-STK")
 public class Producto {
 
+	@Id
 	private Integer id;
+
+	@Column
 	private String descripcion;
+
+	@Column
 	private Double precio;
 	
 	public Integer getId() {
