@@ -1,8 +1,14 @@
 package utn.gallino.mspedido.domain;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "USR_OBRA", schema = "MS-USR")
 public class Obra {
-	
+
+	@Id
 	private Integer id;
+	@Column
 	private String descripcion;
 
 
@@ -20,7 +26,12 @@ public class Obra {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
-	
 
+	@Override
+	public String toString() {
+		return "Obra{" +
+				"id=" + id +
+				", descripcion='" + descripcion + '\'' +
+				'}';
+	}
 }

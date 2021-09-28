@@ -1,15 +1,35 @@
 package utn.gallino.mspedido.domain;
 
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
 
+
+
+@Entity
+@Table(name = "PED_PEDIDO", schema = "MS-PED")
 public class Pedido {
 
+	@Id
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private Integer id;
+	@Column(columnDefinition = "TIMESTAMP")
 	private Instant fechaPedido;
+
+	@OneToOne
+	@JoinColumn(name = "obra_ID")
 	private Obra obra;
+
+	@OneToMany(cascade = {CascadeType.MERGE})
+	@JoinColumn(name = "detalle_pedido_ID")
 	private List<DetallePedido> detalle;
+
+	@OneToOne(cascade = {CascadeType.ALL})
+	@JoinColumn(name = "estado_pedido_ID")
 	private EstadoPedido estado;
+
+
+
 	public Integer getId() {
 		return id;
 	}
@@ -24,8 +44,8 @@ public class Pedido {
 	public void setFechaPedido(Instant fechaPedido) {
 		this.fechaPedido = fechaPedido;
 	}
-	public Obra getObra() {
-		return obra;
+
+	public Obra getObra() {	return obra;
 	}
 	public void setObra(Obra obra) {
 		this.obra = obra;
@@ -41,6 +61,10 @@ public class Pedido {
 	}
 	public void setEstado(EstadoPedido estado) {
 		this.estado = estado;
+	}
+
+	public void addDetallePedido(DetallePedido dp){
+		this.detalle.add(dp);
 	}
 	
 	
