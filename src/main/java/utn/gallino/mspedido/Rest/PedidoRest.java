@@ -29,6 +29,7 @@ public class PedidoRest {
 
 
  //   -----------------------------------------------------------------------------------------------------------------//METODOS POST
+ @CrossOrigin(maxAge = 86400)
     @PostMapping
     @ApiOperation(value = "Crea un pedido")
     public ResponseEntity<String> crearPedido(@RequestBody Pedido unPedido) {
@@ -51,7 +52,7 @@ public class PedidoRest {
 
     }
 
-
+    @CrossOrigin(maxAge = 86400)
     @PostMapping("/{idPedido}/detalle)")
     @ApiOperation(value = "agregar item a un pedido")
     public ResponseEntity<String> agregarItem(@RequestBody DetallePedido detalle, @PathVariable Integer idPedido) {
@@ -70,7 +71,7 @@ public class PedidoRest {
 
 
     //-----------------------------------------------------------------------------------------------------------------   //METODOS GET
-
+    @CrossOrigin(maxAge = 86400)
     @GetMapping(path = "/{id}")
     @ApiOperation(value = "Busca un Pedido por id")
     public ResponseEntity<Pedido> pedidoPorId(@PathVariable Integer id) {
@@ -82,7 +83,7 @@ public class PedidoRest {
 
     }
 
-
+    @CrossOrigin(maxAge = 86400)
     @GetMapping(path = "/obra/{idObra}")
     @ApiOperation(value = "Busca un Pedido por id obra")
     public ResponseEntity<Pedido> pedidoPorIdObra(@PathVariable Integer idObra) {
@@ -108,7 +109,7 @@ public class PedidoRest {
                 .findFirst();
         return ResponseEntity.of(c);
     }*/
-
+@CrossOrigin(maxAge = 86400)
     @GetMapping(path = "/api/pedido/{idPedido}/detalle/{idDetalle}")
     @ApiOperation(value = "Busca un Detalle por id")
     public ResponseEntity<DetallePedido> buscarDetalleXId(@PathVariable Integer idPedido, @PathVariable Integer idDetalle) {
@@ -126,7 +127,7 @@ public class PedidoRest {
 
 
     //----------------------------------------------------------------------------------------------------------------- //METODOS PUT
-
+    @CrossOrigin(maxAge = 86400)
     @PutMapping(path = "/{id}")
     @ApiOperation(value = "Actualiza un Pedido")
     @ApiResponses(value = {
@@ -147,7 +148,7 @@ public class PedidoRest {
 
     //-----------------------------------------------------------------------------------------------------------------//METODOS DELETE
 
-
+    @CrossOrigin(maxAge = 86400)
     @DeleteMapping(path = "/{id}")
     @ApiOperation(value = "Elimina un Pedido x id")
     public ResponseEntity<String> borrar(@PathVariable Integer id)  {
@@ -164,7 +165,7 @@ public class PedidoRest {
 
     }
 
-
+    @CrossOrigin(maxAge = 86400)
     @DeleteMapping(path = "/{idPedido}/detalle/{idDetalle}")
     @ApiOperation(value = "Eliminar un detalle de un pedido")
     public ResponseEntity<String> borrarDetalle(@PathVariable Integer idPedido, @PathVariable Integer idDetalle) {
@@ -182,7 +183,7 @@ public class PedidoRest {
     //***************************************************************----------*************************************************************************************
 
 
-
+    @CrossOrigin(maxAge = 86400)
     @GetMapping(path = "/obra/clienteactivo/")
     @ApiOperation(value = "Servicio de checko de clietne activo mediante lista de id obras")
     public ResponseEntity<Boolean> checkClienteActivo(@RequestParam(value="listaId_Obras") List<Integer> listaId_Obras) {

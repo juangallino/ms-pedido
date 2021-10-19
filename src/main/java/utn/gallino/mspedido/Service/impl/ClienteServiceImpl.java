@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class ClienteServiceImpl implements ClienteService {
 
-	private static final String USR_REST_API_URL = "http://localhost:9002";
+	private static final String USR_REST_API_URL = "http://dan-usuarios:8080";
 	private static final String OBRA_ENDPOINT = "/api/obra/";
 		//api rest pagos
 	private static final String PAGOS_REST_API_URL = "http://localhost:9003";
