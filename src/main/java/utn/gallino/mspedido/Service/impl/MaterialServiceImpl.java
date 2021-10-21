@@ -13,8 +13,8 @@ import utn.gallino.mspedido.repository.MaterialRepository;
 public class MaterialServiceImpl implements MaterialService {
 
 
-	private static final String REST_API_URL = "http://dan-gateway:8080/productos";
-	private static final String STOCK_ENDPOINT = "api/material/";
+	private static final String REST_API_URL = "http://dan-gateway:8080/";
+	private static final String STOCK_ENDPOINT = "productos/api/material/";
 	RestTemplate rest = new RestTemplate();
 
 

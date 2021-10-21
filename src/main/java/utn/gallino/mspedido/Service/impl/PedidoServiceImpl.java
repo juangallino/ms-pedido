@@ -125,12 +125,7 @@ public class PedidoServiceImpl implements PedidoService {
 		//JMS
 		jms.convertAndSend("COLA_PEDIDOS",id_DetallesPedidos);
 		logger.trace("Se envio el msj : {}", id_DetallesPedidos);
-		//System.out.println("llamada http a stock api rest");
-		//String url = STOCK_REST_API_URL + Stock_ENDPOINT +"/pedido/actualizarStockPorPedido/?listaId_dp="+ id_DetallesPedidos;
 
-	//	try {
-	//		rest.exchange(url, HttpMethod.POST,null, Boolean.class).getBody();
-	//	}catch (Exception e){return  false;}
 		return  true;
 	}
 
