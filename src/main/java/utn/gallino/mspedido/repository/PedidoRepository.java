@@ -17,4 +17,5 @@ import java.util.Optional;
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
 
 public Pedido findPedidoByObra_Id(Integer Id);
+public List<Pedido> findPedidosByObra_Id(Integer id);
 }

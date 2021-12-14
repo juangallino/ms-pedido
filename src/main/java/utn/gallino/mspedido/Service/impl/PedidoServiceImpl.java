@@ -203,6 +203,19 @@ public class PedidoServiceImpl implements PedidoService {
 
 		return  auxP;
 	}
+
+	@Override
+	public List<Pedido> buscarPedidosPorIdObra(Integer idObra) throws Exception {
+		Pedido auxP;
+		List<Pedido> result =new ArrayList<>();
+		try {
+
+			result= pedidoRepository.findPedidosByObra_Id(idObra);
+
+		}catch (Exception e ){throw new Exception("not found");}
+
+		return  result;
+	}
 	@Override			//Este metodo se fija si existe algun pedido asociado a la cuenta y devuelve true si hay de lo contrario false
 	public Boolean checkPedidoPorIdObra(Integer idObra){
 		System.out.println("check cliente activo iniciado con id obra= " + idObra);

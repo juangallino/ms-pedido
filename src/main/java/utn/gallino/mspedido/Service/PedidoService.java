@@ -19,4 +19,6 @@ public interface PedidoService {
 
 	DetallePedido buscarDetallePorId(Integer idDetalle, Integer idPedido) throws Exception;
 	public Boolean checkPedidoPorIdObra(Integer idObra);
+
+	List<Pedido> buscarPedidosPorIdObra(Integer idObra) throws Exception;
 }

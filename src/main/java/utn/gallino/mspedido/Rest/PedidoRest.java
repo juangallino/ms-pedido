@@ -98,6 +98,21 @@ public class PedidoRest {
 
     }
 
+    @CrossOrigin(maxAge = 86400)
+    @GetMapping(path = "/obra/listapedidos/{idObra}")
+    @ApiOperation(value = "Busca un Pedido por id obra")
+    public ResponseEntity<List<Pedido>> pedidosPorIdObra(@PathVariable Integer idObra) {
+
+
+        try {
+            return ResponseEntity.ok(pedidoService.buscarPedidosPorIdObra(idObra));
+        }catch (Exception e){
+            return  ResponseEntity.notFound().build();}
+
+
+
+    }
+
 //todo buscar por id o cuit en una misma llamada, x por separado con diferente path es facil
    /* @GetMapping(path = "/cliente/{id}oCuit")
     @ApiOperation(value = "Busca un Pedido por id o Cuit de Cliente ")
